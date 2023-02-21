@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 import pandas as pd
 import numpy as np
 import os
@@ -15,11 +13,9 @@ from IPython.display import Audio, display
 from sqlite3.dbapi2 import OperationalError, IntegrityError
 from multiprocessing import Pool
 
-"""##part 1
-
-###subpart1
 """
-
+Preprocessing
+"""
 dt = pd.read_csv('movies_pr.csv')
 dt.drop_duplicates(inplace=True)
 dt.reset_index(inplace=True, drop=True)
@@ -48,115 +44,14 @@ dt.drop(index=inx, inplace=True)
 dt.drop_duplicates(inplace=True)
 dt.shape
 
-# dt.drop('index', axis=1, inplace=True)
-dt.drop(index=ind, inplace=True)
-dt.reset_index(drop=True, inplace=True)
-dt.shape
-
-ind = [5021, 6510, 6554, 5631, 6613, 750, 4831, 6624, 970, 5210,\
-       1217, 5236, 6393, 13510, 6426, 6716, 6724, 5355, 9243, 10220,\
-       13389, 3155, 5080, 4161, 9249, 6858, 6151, 4566, 5214, 5579,\
-       5629, 6176, 9281, 5398, 9414, 6725, 6058, 15704, 13623, 15703,\
-       9178, 13447, 13337, 13757]
-
-dt[dt.Overview.str.contains('When the brilliant but unorthodox scientist')]
-
-dt[dt.duplicated(['Overview'])][7:]
-
-"""###Overviews"""
-
-dt = pd.read_csv('movies_pr.csv')
-dt.shape
-
-ind, k = [], []
-for i in tqdm(range(len(dt))):
-  if dt.Overview[i].__contains__('?') and dt.Overview[i][-1]!='?':
-    ind.append(i)
-    words = dt.Overview[i].split()
-    for word in words:
-      if word.__contains__('?') and word not in k:
-        k.append(word)
-
-len(ind), len(k)
-
-dt.Title[26] = '8½'
-dt.Title[2389] = '90 Day Fiancé'
-dt.Title[4616] = 'Ófærð'
-dt.Title[6117] = 'Kona fer í stríð'
-dt.Title[7255] = 'Le Samouraï'
-dt.Title[8153] = 'The Protégé'
-dt.Title[10491] = 'Project Mc²'
-dt.Title[10885] = 'Liberté'
-dt.Title[11408] = 'Charité'
-dt.Title[11556] = 'Marketa Lazarová'
-dt.Title[12163] = 'Alien³'
-dt.Title[12843] = 'Be Natural: The Untold Story of Alice Guy-Blaché'
-dt.Title[13037] = 'Salomé'
-dt.Title[13528] = '[Rec]²'
-dt.Title[14352] = 'A White Dress for Marialé'
-dt.Title[15465] = 'Ranma ½'
-dt.Overview[14705] = 'War-hungry teddy bears journey from bootcamp to the psychedelic terrors of the Magic Forest in this darkly beautiful horror animation.'
-
-dt.Overview[dt.Overview.str.contains('unicorn', )]
-
-start, step = 14705, 1
-dt[start:start+step]
-
-start, step = 230, 5
-k[start:start+step]
-
-start, step = 250, 5
-dt.loc[ind, ['Title', 'Year', 'Overview']][start:start+step].values
-
-d = {'prot?g?':'protégé', 'T?r':'Tár', 'fianc?':'fiancé', 'Bogot?': 'Bogotá', 'Sof?a':'Sofía', '?milie':'Émilie', '?lex':'Álex', 'na?ve':'naïve',\
-     'L?o':'Léo', "R?mi":"Rémi", 'Mal?na':'Malèna', 'Ad?le':'Adèle', "d'?tat":"d'état",'Op?ra':'Opéra', 'proteg?':'protégé', 'Merl?':'Merlí',\
-     'J?gerst?tter':'Jägerstätter', ' caf?':' café', 'd?butante':'débutante', 'client?le':'clientèle', 'divorc?':'divorcé', 'H?l?ne':'Hélène',\
-     '?dith':'Édith', 'Ars?ne':'Arsène', "d\'?garement":"d'égarement", 'Chlo?':'Chloé', 'S?o Paulo':'São Paulo', 'fa?ade':'façade', 'attach?':'attaché',\
-     'S?nchez':'Sánchez','Mu?ez':'Muñez', 'Atticus P?nd':'Atticus Pünd','?ber rich':'über rich', 'Jacob St?rr':'Jacob Störr','the Le?ncio':'the Leôncio',\
-     'the Marru?':'the Marruá', 'Am?lia':'Amélia', 'm?nage ? trois':'ménage à trois', 'M?tley Cr?e':'Mötley Crüe','9? Weeks':'9½ Weeks', 'M?ria':'Mária',\
-     'Jos?':'José', 'Mart?n':'Martín', 'Ana?s':'Anaïs', 'Caf?':'Café', 'Fr?d?ric':'Frédéric', 'Ra?l':'Raúl', 'Ragnar?k': 'Ragnarök',\
-     'imp Blitz?':'imp Blitzø', 'Pok?mon': 'Pokémon', '\x92':"'", '?50k':'£50k', 'Egbert Sous?':'Egbert Sousé', 'Son Gok?':'Son Gokû', ' Ren?':' René',\
-     'Diakit?':'Diakité', 'Ast?rix':'Astérix', 'Ob?lix':'Obélix', 'Num?robis':'Numérobis', 'Ram?n': 'Ramón', 'D?sseldorf':'Düsseldorf', 'Br?no':'Brüno',\
-     'Medell?n':'Medellín','Saga Nor?n':'Saga Norén', 'Ko?ovali':'Koçovali', '?eki? ve G?l':'Çekiç ve Gül', 'Rapha?l':'Raphaël', '?mer U?ar':'Ömer Uçar',\
-     'Mill?n':'Millán','Malm?':'Malmö', 'doppelg?nger':'doppelgänger','Th?r?se':'Thérèse','Jens M?ller':'Jens Møller', 'Bj?rn Andresen':'Björn Andresen',\
-     'Bj?rn':'Bjørn', '?on Flux':'Æon Flux', 'soup?on':'soupçon', 'Neuk?lln':'Neukölln', 'Carl M?rck':'Carl Mørck', 'Bouvet?ya':'Bouvetøya',\
-     'Faberg?':'Fabergé', "Tot? u Curtu":'Totò u Curtu', 'expos?':'exposé', 'Montr?al':'Montréal', 'H?ctor':'Héctor', 'Belascoar?n':'Belascoarán',\
-     '?ngela':'Ángela', 'Jordn?ra':'Jordnära', 'Padm?':'Padmé', 'Khlo?':'Khloé', 'In?s':'Inés', 'clich?':'cliché', 'Z? Carioca':'Zé Carioca',\
-     'Kung F?hrer':'Kung Führer', 'Bu?uel':'Buñuel', 'Dal?':'Dalí', 'Lou?s':'Louÿs', 'R?gnier':'Régnier', '?rp?d':'Árpád', 'Gl?ria':'Glória',\
-     'Jo?o':'João','Per?n':'Perón', 'G?k Han':'Gök Han', 'D?az':'Díaz', 'Sebasti?o':'Sebastião', 'Bront?':'Brontë','?1 million':'£1 million',\
-     'H?kon':'Håkon', 'Sobib?r':'Sobibór', 'Charit?':'Charité', 'Mar?a':'María', 'Due?as':'Dueñas', 'C?vennes':'Cévennes','Cond?':'Condé',\
-     'Hern?n':'Hernán', 'Cort?s':'Cortés', 'M?xico':'México', 'Sm?land':'Småland', 'S?mi':'Sámi', 'Asunci?n':'Asunción', 'Ern?':'Ernõ', 'F?in':'Féin',\
-     '?guila':'Águila', 'Lo?e':'Loïe', 'Berg?res':'Bergères', 'Lumi?re':'Lumière', 'P?ricourt':'Péricourt', 'C?line':'Céline', 'G?ring':'Göring',\
-     'Assembl?e':'Assemblée', 'F?lix':'Félix', 'Ang?lique':'Angélique', 'derg?h':'dergâh', 'C?ndido':'Cândido', 'Kitzb?hel':'Kitzbühel',\
-     'Superman?s':"Superman's", '(n?e ':'(née ', 'Z?topek':'Zátopek', 'Salom?':'Salomé', 'Fran?ois':'François', 'Guy-Blach?':'Guy-Blaché',\
-     'Hor?kov?':'Horáková', 'Ant?nio':'António', '?lvares':'Álvares', 'Ic?ar Bolla?n':' Icíar Bollaín', 'M?rbult':'Mörbult', 'Midg?rd':'Midgård',\
-     'H?j?':'Hōjō', '(K?ki)':'(Kôki)', 'N?dasdy':'Nádasdy', 'Ib??ez':'Ibáñez', 'Nausica?':'Nausicaä', 'Guant?namo':'Guantánamo', 'h?mophage':'hæmophage',\
-     'Sl?born':'løborn', 'Ch?nin':'Chûnin', 'Bat?':'Batô', 'C?lestine':'Célestine','G? Mifune':'Gô Mifune', 'T?ngere':'Tángere' }
-
-for i in tqdm(range(len(dt))):
-  dt.Overview[i] = dt.Overview[i].replace("\\'", "'")
-
-start, step = 240, 10
-dt.loc[ind, ['Title', 'Year', 'Overview']][start:start+step].values
-print(dt.loc[(dt.Overview.str[-1]!='?') &(dt.Overview.str.contains('\?')),['Title', 'Overview']].values.shape)
-dt.loc[(dt.Overview.str[-1]!='?') &(dt.Overview.str.contains('\?')),['Title', 'Overview']].values
-dt.to_csv('movies_pr.csv', index=False)
-
-
-
-"""### full cast"""
-
-dt = pd.read_csv('movies_pr.csv')
-dt.head(1)
-dt.shape
-
+"""
+Adding full cast
+"""
 names = ['Url', 'Directed', 'Cast']
 df = pd.concat([pd.read_csv('actors.csv', names=names),\
                 pd.read_csv('actors1.csv', names=names),\
                 pd.read_csv('actors2.csv', names=names)])
 df.reset_index(drop=True, inplace=True)
-df.shape
-
 dt['Directed'] = [0]*len(dt)
 dt['Cast'] = [0]*len(dt)
 
@@ -192,9 +87,6 @@ dt.Directed[11995] = 'Stéphanie Di Giusto'
 dt.Cast[11995] = 'Soko, Gaspard Ulliel, Mélanie Thierry, Lily-Rose Depp, François Damiens, Louis-Do de Lencquesaing, Amanda Plummer, Denis Ménochet, Charlie Morgan, Tamzin Merchant, William Houston, Bert Haelvoet, Camille Rutherford, Laurent Manzoni, Matilda Kime, Christian Erickson, Nicolas Helpiquet, Daniel Kramer'
 
 dt.drop(['Directed by', 'Starring'], axis=1, inplace=True)
-dt.head(1)
-
-dt[11995:12000]
 
 ind = []
 for i in tqdm(range(len(dt))):
@@ -205,22 +97,11 @@ for i in tqdm(range(len(dt))):
             a = ', '.join(dir)
             dt.Directed[i] = a
 
-dt[dt.Type.str.contains('Series')][10:15]
-
 dt.to_csv('movies_pr.csv', index=False)
-
-"""##Images"""
-
-y = []
-for i in tqdm(range(len(dt))):
-    t = dt.Title[i]
-    t = re.sub("[A-z0-9?\/\\';:'\|* ]", '', t)
-    for j in t:
-        if j not in y:
-            y.append(j)
-
+"""
+Adding Images names
+"""
 dt['Images'] = [0]*len(dt)
-
 k = []
 for i in tqdm(range(len(dt))):
     if str(dt.Year[i]) != 'nan':
@@ -237,19 +118,32 @@ for i in tqdm(range(len(dt))):
         dt['Images'][i] = im
         k.append(im)
 
-dt[dt.Title=='The Cursed']
-
 dt.to_csv('movies_pr.csv', index=False)
 
-dt[dt.duplicated('Images')]
-
-
-
-"""#Tables preparing
-
-##movies
 """
+Making a file of similar overviews
+"""
+rom sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+import h5py
 
+movies = pd.read_csv('movies_pr.csv')
+movies = movies[['Title', 'Overview']]
+movies.columns = ['title', 'overview']
+
+tfidf = TfidfVectorizer(stop_words='english')
+movies["overview"] = movies["overview"].fillna("")
+overview_matrix = tfidf.fit_transform(movies["overview"])
+
+similarity_matrix = linear_kernel(overview_matrix, overview_matrix)
+
+with h5py.File('Sim_mat_15569.hdf5', 'w') as f:
+    dset = f.create_dataset("default", data=similarity_matrix, compression="gzip", compression_opts=9)
+
+"""
+Tables preparing
+"""
+#Movies table
 films = dt.copy()
 films.drop(['Genre(s)', 'Cast', 'Directed', 'Url'], axis=1, inplace=True)
 
@@ -273,16 +167,13 @@ for i in tqdm(range(len(films))):
        index = index + '1'
        ind.append(index)
 
-len(ind), films.shape
-
 films['id'] = ind
-
 films.to_csv('movies.csv', index=False)
 
-df = pd.read_csv('movies.csv')
-df.head(1)
-
-dt = pd.read_csv('movies_pr.csv')
+df = pd.read_csv('movies_pr.csv')
+#Adding (1) to movies with similar years and titles
+print(df[df.duplicated(['Title', 'Year'])].shape)
+df[df.duplicated(['Title', 'Year'])]
 
 df.Year[4237] = '(2010) (1)'
 df.Year[7810] = '(2021) (1)'
@@ -301,21 +192,10 @@ df.Year[14291] = '(2005) (1)'
 df.Year[14315] = '(2019) (1)'
 df.Year[14697] = '(2021) (1)'
 
-df.drop(index=13309, inplace=True)
+df.to_csv('movies_pr.csv', index=False)
 
-df[11605:]
-
-print(df[df.duplicated(['Title', 'Year'])].shape)
-df[df.duplicated(['Title', 'Year'])]
-
-dt.to_csv('movies_pr.csv', index=False)
-
-df.to_csv('movies.csv', index=False)
-
-"""##stars"""
-
+# Stars Table
 dt = pd.read_csv('Prmovies10.csv')
-
 st =[]
 for i in tqdm(range(len(dt))):
     if str(dt['Cast'][i]) != 'nan':
@@ -324,10 +204,7 @@ for i in tqdm(range(len(dt))):
         st = st + str(dt['Directed'][i]).split(', ')
 
 s = pd.read_csv('Stars.csv')
-s.head(1)
-
 stars = list(set(st))
-# stars.remove('nan')
 stars.sort(key=lambda x: x.split()[-1])
 len(stars)
 
@@ -359,16 +236,10 @@ for i in tqdm(range(len(star))):
         index = index + '1'
         ind.append(index)
 
-len(ind), star.shape
-
 star.id = ind
-
-start, step  = 112210, 5
-star[start:start+step]
-
 star.to_csv('stars.csv', index=False)
 
-"""## movies-genres"""
+# Movies-genres table
 
 k, ind = 0, []
 for i in range(len(dt)):
@@ -378,7 +249,6 @@ for i in range(len(dt)):
         if j.strip() not in ind:
             ind.append(j.strip())
 ind = sorted(ind)
-
 g = pd.DataFrame({'id':len(ind), 'genre':ind})
 
 n = [str(i) for i in range(10)]
@@ -391,7 +261,6 @@ for i in tqdm(range(len(g))):
     g.id[i] = line + d_part
 
 g.to_csv('genres.csv', index=False)
-
 mov_gen = pd.DataFrame({'movie_id':[0]*k, 'genre_id':[0]*k})
 
 gen, mov = [], []
@@ -404,11 +273,9 @@ for i in tqdm(range(len(dt))):
 
 mov_gen['movie_id'] = mov
 mov_gen['genre_id'] = gen
-mov_gen.head(5)
-
 mov_gen.to_csv('movies-genres.csv', index=False)
 
-"""##movies-actors"""
+#Movies-actors table
 
 dt = pd.read_csv('movies_pr.csv')
 movies = pd.read_csv('movies.csv')
@@ -418,12 +285,10 @@ mov_act = pd.read_csv('movie-actor.csv')
 fwna = dt[['Title', 'Cast']][dt.Cast.isna()==False]
 fwna['id'] = movies['id']
 fwna.reset_index(drop=True, inplace=True)
-fwna.tail(5)
 
 k = 0
 for i in tqdm(range(len(fwna))):
     k += len(fwna['Cast'][i].split(','))
-k
 
 act, mov, ind = [], [], []
 for i in tqdm(range(len(fwna))):
@@ -443,22 +308,12 @@ mov_act['rating'] = m_a['rating']
 for i in tqdm(range(len(mov_act))):
     mov_act.actor_id[i] = star.id[star.name==mov_act.actor_id[i]].values[0]
 
-m_a[m_a.actor_id=='Masako Watanabe']
-
-mov_act[-5:], m_a[-5:]
-
 print(mov_act.shape)
 mov_act.drop_duplicates(inplace=True, )
 mov_act.shape
-
-st = 269006
-m_a[st:st+5], mov_act[st:st+5]
-
-
-
 mov_act.to_csv('movie-actor.csv', index=False)
 
-"""##movie-director"""
+#movie-director table
 
 fdwna = dt[['Title', 'Directed by']][dt['Directed by'].isna()==False]
 fdwna['id'] = movies['id']
@@ -471,36 +326,31 @@ for i in range(len(fdwna)):
     if len(fdwna['Directed by'][i].split(',')) > c:
         c = len(fdwna['Directed by'][i].split(','))
         print(f'{i}) {fdwna.Title[i]} | {len(fdwna["Directed by"][i].split(", "))} | {fdwna["Directed by"][i]}')
-k
 
 mov_dir = pd.DataFrame({'movie_id':[0]*k, 'director_id':[0]*k, 'rating':[0]*k})
 
-dir, m, r = [], [], []
+dirs, m, r = [], [], []
 for i in tqdm(range(len(fdwna))):
     jh = fdwna['Directed by'][i].split(', ')
     for j in range(len(jh)):
         x = star.id[star.name == jh[j]].values[0]
-        dir.append(x)
+        dirs.append(x)
         m.append(fdwna.id[i])
     r = r + [y for y in range(1, len(jh) + 1)]
-len(m), len(dir), len(r)
 
 mov_dir['movie_id'] = m
-mov_dir['director_id'] = dir
+mov_dir['director_id'] = dirs
 mov_dir['rating'] = r
-mov_dir.tail(5)
 
 print(mov_dir.shape)
 mov_dir.drop_duplicates(['movie_id', 'director_id'], inplace=True)
 mov_dir.shape
 
-mov_dir.tail(15)
-
-fdwna.tail(10)
-
 mov_dir.to_csv('movies-directors.csv', index=False)
 
-"""#database"""
+"""
+Database
+"""
 
 fm = pd.read_csv('movies.csv')
 s = pd.read_csv('movie-stars.csv')
@@ -547,31 +397,11 @@ conn.commit()
 curr.execute("SELECT name FROM sqlite_master WHERE type='table';")
 curr.fetchall()
 
-"""##stars"""
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Delete from mov_dir')
-x = curr.fetchall()
-curr.close()
-conn.commit()
-x
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Select count(*) from stars')
-x = curr.fetchall()
-curr.close()
-x
-
-s.shape
-
+#stars table
 step=10000
 l = [[step*k+j-step for k in range(2)] for j in range(1*step, 14*step+1, step)]
 l[-1][1] = s.shape[0]
-l
 
-# Stars table
 def f(a):
     start, stop = a
     conn = sqlite3.connect('Movies.db')
@@ -587,33 +417,11 @@ except (OperationalError, IntegrityError):
     pass
 display(Audio('1.wav', autoplay=True))
 
-"""## movies"""
-
-fm.columns.tolist()
-
-fm.shape
-
+# movies table
 step=10000
 l = [[step*k+j-step for k in range(2)] for j in range(1*step, 2*step+1, step)]
 l[-1][1] = fm.shape[0]
-l
 
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Delete from movies')
-x = curr.fetchall()
-curr.close()
-conn.commit()
-x
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Select * from movies Limit 5')
-x = curr.fetchall()
-curr.close()
-x
-
-# Films table
 def f(a):
     start, stop = a
     conn = sqlite3.connect('Movies.db')
@@ -639,13 +447,8 @@ except (OperationalError, IntegrityError):
     pass
 display(Audio('1.wav', autoplay=True))
 
-"""##genres
+#genres table
 
-"""
-
-g.columns.tolist()
-
-# Genre table
 conn = sqlite3.connect('Movies.db')
 curr = conn.cursor()
 for j in tqdm(range(len(g)), desc="Progress" ):
@@ -654,18 +457,12 @@ for j in tqdm(range(len(g)), desc="Progress" ):
   conn.commit()
 curr.close()
 
-"""##mov_gen"""
-
-f_g.columns.tolist()
-
-f_g.shape
+#mov_gen table
 
 step=10000
 l = [[step*k+j-step for k in range(2)] for j in range(1*step, 5*step+1, step)]
 l[-1][1] = f_g.shape[0]
-l
 
-# Genre_ids table
 def f(a):
     start, stop = a
     conn = sqlite3.connect('Movies.db')
@@ -681,31 +478,11 @@ except (OperationalError, IntegrityError):
     pass
 display(Audio('1.wav', autoplay=True))
 
-"""##mov_act"""
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Delete from mov_act')
-x = curr.fetchall()
-curr.close()
-conn.commit()
-x
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Select * from mov_act limit 5')
-x = curr.fetchall()
-curr.close()
-x
-
-m_a.shape
-
-m_a.columns.tolist()
+#mov_act table
 
 step=10000
 l = [[step*k+j-step for k in range(2)] for j in range(1*step, 27*step+1, step)]
 l[-1][1] = m_a.shape[0]
-l
 
 def f(a):
     start, stop = a
@@ -722,33 +499,12 @@ except (OperationalError):
     pass
 display(Audio('1.wav', autoplay=True))
 
-"""##mov_dir"""
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Delete from mov_dir')
-x = curr.fetchall()
-curr.close()
-conn.commit()
-x
-
-conn = sqlite3.connect('Movies.db')
-curr = conn.cursor()
-curr.execute('Select count(*) from mov_dir')
-x = curr.fetchall()
-curr.close()
-x
-
-m_d.shape
-
-m_d.columns.tolist()
+#mov_dir table
 
 step = 10000
 l = [[step*k + j - step for k in range(2)] for j in range(1*step, 2*step + 1, step)]
 l[-1][1] = m_d.shape[0]
-l
 
-# Directors table
 def f(a):
     start, stop = a
     conn = sqlite3.connect('Movies.db')
@@ -764,7 +520,9 @@ except (OperationalError, IntegrityError):
     pass
 display(Audio('1.wav', autoplay=True))
 
-"""##queries"""
+"""
+Queries
+"""
 
 sql = '''
 Select *
